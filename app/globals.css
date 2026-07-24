@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --font-sans: var(--font-open-sans), system-ui, -apple-system, sans-serif;
+  --color-page: #000000;
+  --color-band: #080808;
+  --color-surface: #141414;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes magazineGlowA {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  50% { transform: translate(4%, 6%) scale(1.08); opacity: 1; }
+}
+
+@keyframes magazineGlowB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-5%, 4%) scale(1.06); }
+}
+
+@keyframes magazineGlowC {
+  0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+  50% { transform: translate(3%, -4%); opacity: 0.8; }
+}
+
+@keyframes magazineFloatA {
+  0%, 100% { transform: rotate(-12deg) translateY(0); }
+  50% { transform: rotate(-10deg) translateY(-14px); }
+}
+
+@keyframes magazineFloatB {
+  0%, 100% { transform: rotate(8deg) translateY(0); }
+  50% { transform: rotate(10deg) translateY(-18px); }
+}
+
+@keyframes magazineFloatC {
+  0%, 100% { transform: rotate(4deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-10px); }
+}
+
+@keyframes magazineMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes magazinePulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes magazineFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.magazine-glow-a { animation: magazineGlowA 9s ease-in-out infinite; }
+.magazine-glow-b { animation: magazineGlowB 11s ease-in-out infinite; }
+.magazine-glow-c { animation: magazineGlowC 13s ease-in-out infinite; }
+.magazine-float-a { animation: magazineFloatA 7s ease-in-out infinite; }
+.magazine-float-b { animation: magazineFloatB 8s ease-in-out infinite 0.5s; }
+.magazine-float-c { animation: magazineFloatC 9s ease-in-out infinite 1s; }
+.magazine-marquee-track { animation: magazineMarquee 40s linear infinite; width: max-content; }
+.magazine-pulse-dot { animation: magazinePulseDot 2s ease-in-out infinite; }
+.magazine-fade-up { animation: magazineFadeUp 0.8s ease-out both; }
+.magazine-fade-up-delay-1 { animation-delay: 0.1s; }
+.magazine-fade-up-delay-2 { animation-delay: 0.2s; }
+.magazine-fade-up-delay-3 { animation-delay: 0.35s; }
+.magazine-fade-up-delay-4 { animation-delay: 0.5s; }
+.magazine-fade-up-delay-5 { animation-delay: 0.65s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .magazine-glow-a,
+  .magazine-glow-b,
+  .magazine-glow-c,
+  .magazine-float-a,
+  .magazine-float-b,
+  .magazine-float-c,
+  .magazine-marquee-track,
+  .magazine-pulse-dot,
+  .magazine-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
