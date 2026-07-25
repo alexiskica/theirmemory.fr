@@ -18,9 +18,6 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 86400,
   },
-  experimental: {
-    optimizePackageImports: ['@supabase/supabase-js'],
-  },
 };
 
 export default nextConfig;
