@@ -45,6 +45,14 @@ export default function ArticleContentStyles() {
             text-decoration: underline;
             text-underline-offset: 3px;
           }
+          .article-content em,
+          .article-content i {
+            font-style: italic;
+          }
+          .article-content strong,
+          .article-content b {
+            font-weight: 700;
+          }
           .article-content blockquote {
             position: relative;
             display: flex;
