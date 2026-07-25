@@ -114,6 +114,24 @@ export default function ArticleContentStyles() {
             font-weight: 500;
             color: #7F7F7F;
           }
+          .article-content blockquote .blockquote-source,
+          .article-content blockquote cite.blockquote-source {
+            display: block;
+            margin-top: -8px;
+            font-size: 13px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #7F7F7F;
+          }
+          .article-content blockquote .blockquote-source a {
+            color: #A3A3A3;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+          }
+          .article-content blockquote .blockquote-source a:hover {
+            color: #fff;
+          }
           .article-content figure {
             width: 100%;
             display: flex;
