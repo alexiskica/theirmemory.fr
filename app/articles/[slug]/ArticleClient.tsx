@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 import ArticleCard from '@/components/ArticleCard';
 import ArticleContentStyles from '@/components/article/ArticleContentStyles';
+import BookmarkButton from '@/components/home/BookmarkButton';
 import SiteSection from '@/components/layout/SiteSection';
 import SectionHeader from '@/components/layout/SectionHeader';
 import type { PublicArticle } from '@/lib/articles';
@@ -245,6 +246,14 @@ export default function ArticleClient({
                 </div>
 
                 <div className="flex items-center gap-[12px]">
+                  <BookmarkButton
+                    contentType="article"
+                    contentId={article.slug}
+                    title={article.title}
+                    href={`/articles/${article.slug}`}
+                    thumbnailUrl={cover}
+                    className="!w-[36px] !h-[36px] !rounded-full"
+                  />
                   {(['facebook', 'twitter', 'linkedin', 'copy'] as const).map((p) => (
                     <ShareButton key={p} platform={p} onClick={() => handleShare(p)} />
                   ))}

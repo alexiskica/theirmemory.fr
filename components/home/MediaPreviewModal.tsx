@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import BookmarkButton from '@/components/home/BookmarkButton';
 import { categoryHashtag } from '@/lib/category-styles';
 import {
   formatMediaDate,
@@ -301,8 +302,8 @@ export default function MediaPreviewModal({ item, onClose }: MediaPreviewModalPr
           </div>
 
           {/* Actions */}
-          {watchUrl && (
-            <div className="flex flex-wrap items-center gap-[10px] mb-[20px]">
+          <div className="flex flex-wrap items-center gap-[10px] mb-[20px]">
+            {watchUrl && (
               <a
                 href={watchUrl}
                 target="_blank"
@@ -316,8 +317,16 @@ export default function MediaPreviewModal({ item, onClose }: MediaPreviewModalPr
                 )}
                 {watchLabel}
               </a>
-            </div>
-          )}
+            )}
+            <BookmarkButton
+              contentType={isVideo ? 'video' : 'podcast'}
+              contentId={item.id}
+              title={item.title}
+              href={item.href}
+              thumbnailUrl={item.thumbnailUrl}
+              className="!w-[40px] !h-[40px]"
+            />
+          </div>
 
           <p className="text-[#c8c8c8] text-[14px] leading-[1.65] mb-[20px]">{item.description}</p>
 

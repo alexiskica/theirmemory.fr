@@ -12,17 +12,25 @@ function articleImage(article: PublicArticle) {
   return article.cover_image_url || article.thumbnail_url;
 }
 
-function ArticleActions({ slug }: { slug: string }) {
+function ArticleActions({ article }: { article: PublicArticle }) {
+  const image = articleImage(article);
   return (
     <div className="flex items-center gap-[8px]">
       <Link
-        href={`/articles/${slug}`}
+        href={`/articles/${article.slug}`}
         aria-label="Lire l'article"
         className="inline-flex items-center justify-center w-[40px] h-[40px] rounded-[8px] border border-white/20 text-white hover:bg-white hover:text-black transition-all"
       >
         <svg className="w-[6px] h-[10px]" viewBox="0 0 8 14" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 1l6 6-6 6" /></svg>
       </Link>
-      <BookmarkButton slug={slug} className="!w-[40px] !h-[40px]" />
+      <BookmarkButton
+        contentType="article"
+        contentId={article.slug}
+        title={article.title}
+        href={`/articles/${article.slug}`}
+        thumbnailUrl={image}
+        className="!w-[40px] !h-[40px]"
+      />
     </div>
   );
 }
@@ -61,7 +69,7 @@ function SideArticle({ article }: { article: PublicArticle }) {
               </h3>
             </Link>
           </div>
-          <ArticleActions slug={article.slug} />
+          <ArticleActions article={article} />
         </div>
       </div>
     </article>
@@ -130,7 +138,7 @@ export default function FeaturedReading({
                     </h3>
                   </Link>
                 </div>
-                <ArticleActions slug={main.slug} />
+                <ArticleActions article={main} />
               </div>
             </article>
           )}

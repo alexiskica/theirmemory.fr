@@ -119,3 +119,186 @@ body {
     transform: none;
   }
 }
+
+/* Ambient title — espace compte (variante sombre / accent jaune) */
+.welcome-ambient {
+  height: 88px;
+}
+
+@media (max-width: 900px) {
+  .welcome-ambient {
+    height: 72px;
+  }
+}
+
+.welcome-ambient-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.welcome-orb {
+  fill: rgba(255, 204, 0, 0.06);
+  stroke: rgba(255, 204, 0, 0.28);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.welcome-orb-1 {
+  animation: welcome-orb-drift-1 9s ease-in-out infinite;
+}
+
+.welcome-orb-2 {
+  animation: welcome-orb-drift-2 11s ease-in-out infinite;
+}
+
+.welcome-orb-3 {
+  animation: welcome-orb-drift-3 8s ease-in-out infinite;
+}
+
+.welcome-ring {
+  fill: none;
+  stroke: rgba(255, 204, 0, 0.45);
+  stroke-width: 1.25;
+  stroke-dasharray: 8 6;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.welcome-ring-1 {
+  animation: welcome-ring-spin 14s linear infinite, welcome-ring-fade 7s ease-in-out infinite;
+}
+
+.welcome-ring-2 {
+  animation: welcome-ring-spin 18s linear infinite reverse, welcome-ring-fade 9s ease-in-out infinite;
+  animation-delay: 1.2s, 0.6s;
+}
+
+.welcome-dot {
+  fill: #ffcc00;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.welcome-dot-1 {
+  animation: welcome-dot-pulse 4.2s ease-in-out infinite;
+}
+
+.welcome-dot-2 {
+  animation: welcome-dot-pulse 5.1s ease-in-out infinite 0.8s;
+}
+
+.welcome-dot-3 {
+  animation: welcome-dot-pulse 3.8s ease-in-out infinite 1.4s;
+}
+
+.welcome-dot-4 {
+  animation: welcome-dot-pulse 4.7s ease-in-out infinite 0.3s;
+}
+
+.welcome-dot-5 {
+  animation: welcome-dot-pulse 5.4s ease-in-out infinite 1.9s;
+}
+
+.welcome-dot-6 {
+  animation: welcome-dot-pulse 4s ease-in-out infinite 2.4s;
+}
+
+@keyframes welcome-orb-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    stroke-opacity: 0.35;
+  }
+  50% {
+    transform: translate(10px, -6px) scale(1.06);
+    stroke-opacity: 0.7;
+  }
+}
+
+@keyframes welcome-orb-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    stroke-opacity: 0.4;
+  }
+  50% {
+    transform: translate(-8px, 7px) scale(0.94);
+    stroke-opacity: 0.75;
+  }
+}
+
+@keyframes welcome-orb-drift-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    stroke-opacity: 0.3;
+  }
+  50% {
+    transform: translate(6px, 5px) scale(1.08);
+    stroke-opacity: 0.65;
+  }
+}
+
+@keyframes welcome-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes welcome-ring-fade {
+  0%,
+  100% {
+    opacity: 0.35;
+    stroke-width: 1;
+  }
+  50% {
+    opacity: 0.9;
+    stroke-width: 1.5;
+  }
+}
+
+@keyframes welcome-dot-pulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  45% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-orb,
+  .welcome-ring,
+  .welcome-dot {
+    animation: none;
+  }
+
+  .welcome-orb {
+    stroke-opacity: 0.5;
+  }
+
+  .welcome-ring {
+    opacity: 0.55;
+  }
+
+  .welcome-dot {
+    opacity: 0.35;
+  }
+}

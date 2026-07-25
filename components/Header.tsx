@@ -8,6 +8,7 @@ import {
   INSTITUTIONAL_SITE_URL,
   MEDIA_NAV,
 } from '@/lib/site-config';
+import { createOrgClient } from '@/utils/supabase/org-client';
 
 const LANGUAGES = {
   fr: { label: 'Français', flag: 'https://flagcdn.com/w40/fr.png' },
@@ -101,10 +102,23 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileActiveSubmenu, setMobileActiveSubmenu] = useState<string | null>(null);
-  const [isAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const t = TRANSLATIONS[currentLang];
+
+  useEffect(() => {
+    const supabase = createOrgClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(Boolean(session?.user));
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session?.user));
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     (window as Window & { googleTranslateElementInit?: () => void }).googleTranslateElementInit = () => {
@@ -245,10 +259,10 @@ export default function Header() {
 
             <div className="relative h-full flex-shrink-0">
               <div className="absolute bottom-0 left-0 w-[20px] h-[20px] bg-white pointer-events-none" />
-              <a href={`${INSTITUTIONAL_SITE_URL}/login`} className="relative z-10 flex items-center justify-center h-full gap-[8px] cursor-pointer bg-[#FFCC00] px-[24px] rounded-bl-[12px] rounded-tr-[12px] transition-all hover:bg-[#FFD633]">
+              <Link href={isAuthenticated ? '/compte' : '/login'} className="relative z-10 flex items-center justify-center h-full gap-[8px] cursor-pointer bg-[#FFCC00] px-[24px] rounded-bl-[12px] rounded-tr-[12px] transition-all hover:bg-[#FFD633]">
                 <span className="text-black text-[14px] font-semibold">{isAuthenticated ? t.myAccount : t.login}</span>
                 <svg className="w-[14px] h-[14px] shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none"><path d="M2.695 10.57C3.29 10.115 3.955 9.75625 4.69 9.49375C5.425 9.23125 6.195 9.1 7 9.1C7.805 9.1 8.575 9.23125 9.31 9.49375C10.045 9.75625 10.71 10.115 11.305 10.57C11.7133 10.0917 12.0312 9.54917 12.2587 8.9425C12.4862 8.33583 12.6 7.68833 12.6 7C12.6 5.44833 12.0546 4.12708 10.9637 3.03625C9.87292 1.94542 8.55167 1.4 7 1.4C5.44833 1.4 4.12708 1.94542 3.03625 3.03625C1.94542 4.12708 1.4 5.44833 1.4 7C1.4 7.68833 1.51375 8.33583 1.74125 8.9425C1.96875 9.54917 2.28667 10.0917 2.695 10.57ZM7 7.7C6.31167 7.7 5.73125 7.46375 5.25875 6.99125C4.78625 6.51875 4.55 5.93833 4.55 5.25C4.55 4.56167 4.78625 3.98125 5.25875 3.50875C5.73125 3.03625 6.31167 2.8 7 2.8C7.68833 2.8 8.26875 3.03625 8.74125 3.50875C9.21375 3.98125 9.45 4.56167 9.45 5.25C9.45 5.93833 9.21375 6.51875 8.74125 6.99125C8.26875 7.46375 7.68833 7.7 7 7.7ZM7 14C6.03167 14 5.12167 13.8162 4.27 13.4488C3.41833 13.0813 2.6775 12.5825 2.0475 11.9525C1.4175 11.3225 0.91875 10.5817 0.55125 9.73C0.18375 8.87833 0 7.96833 0 7C0 6.03167 0.18375 5.12167 0.55125 4.27C0.91875 3.41833 1.4175 2.6775 2.0475 2.0475C2.6775 1.4175 3.41833 0.91875 4.27 0.55125C5.12167 0.18375 6.03167 0 7 0C7.96833 0 8.87833 0.18375 9.73 0.55125C10.5817 0.91875 11.3225 1.4175 11.9525 2.0475C12.5825 2.6775 13.0813 3.41833 13.4488 4.27C13.8162 5.12167 14 6.03167 14 7C14 7.96833 13.8162 8.87833 13.4488 9.73C13.0813 10.5817 12.5825 11.3225 11.9525 11.9525C11.3225 12.5825 10.5817 13.0813 9.73 13.4488C8.87833 13.8162 7.96833 14 7 14Z" fill="black" /></svg>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -334,9 +348,9 @@ export default function Header() {
             <div className={`flex-1 overflow-y-auto w-full pb-[120px] ${mobileActiveSubmenu ? 'bg-[#f5f5f5]' : 'bg-white'}`}>
               {!mobileActiveSubmenu ? (
                 <div className="flex flex-col w-full min-h-full pb-[40px]">
-                  <a href={`${INSTITUTIONAL_SITE_URL}/login`} className="w-full bg-[#FFCC00] hover:bg-[#FFD633] px-[20px] py-[16px] flex items-center justify-between" onClick={closeMenus}>
+                  <Link href={isAuthenticated ? '/compte' : '/login'} className="w-full bg-[#FFCC00] hover:bg-[#FFD633] px-[20px] py-[16px] flex items-center justify-between" onClick={closeMenus}>
                     <span className="text-black text-[16px] font-bold">{isAuthenticated ? t.myAccount : t.login}</span>
-                  </a>
+                  </Link>
                   <div className="flex flex-col pt-[16px]">
                     <button onClick={() => setMobileActiveSubmenu('articles')} className="flex items-center justify-between py-[16px] px-[20px] w-full text-left">
                       <span className="text-[#000] text-[16px] font-bold">{t.nav.articles}</span>

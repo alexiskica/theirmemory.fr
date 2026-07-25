@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { SyncLocalBookmarksOnLogin } from '@/components/home/BookmarkButton';
 import { SITE_NAME, SITE_URL } from '@/lib/site-config';
 import { buildOrganizationJsonLd, buildWebSiteJsonLd } from '@/lib/seo';
 
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Suspense>
         )}
         <Header />
+        <SyncLocalBookmarksOnLogin />
         {children}
         <CookieConsent />
         <Footer />

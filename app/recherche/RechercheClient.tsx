@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import BookmarkButton from '@/components/home/BookmarkButton';
 import PageContainer from '@/components/layout/PageContainer';
 import { SITE_PAGE_CONTENT, SITE_PAGE_HERO } from '@/lib/site-layout';
 import {
@@ -507,15 +508,40 @@ function RechercheContent({ initialData }: { initialData: SearchResultItem[] }) 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[32px] max-[900px]:gap-[24px]">
               {paginatedResults.map((item) => {
                 const color = SEARCH_TYPE_COLORS[item.type];
+                const bookmark =
+                  item.type === 'Article'
+                    ? {
+                        contentType: 'article' as const,
+                        contentId: item.link.replace(/^\/articles\//, ''),
+                      }
+                    : item.type === 'Vidéo'
+                      ? {
+                          contentType: 'video' as const,
+                          contentId: item.id.replace(/^vid_/, ''),
+                        }
+                      : null;
+
                 return (
-                  <Link
-                    href={item.link}
+                  <div
                     key={item.id}
                     className="bg-[#111] rounded-[12px] p-[32px] max-[900px]:p-[24px] hover:shadow-[0_12px_30px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-300 border border-white/10 flex flex-col relative overflow-hidden group h-full"
                   >
                     <div className="absolute top-0 left-0 w-full h-[4px] opacity-0 transition-opacity group-hover:opacity-100" style={{ backgroundColor: color }} />
 
-                    <div className="flex flex-wrap items-center gap-[12px] mb-[20px]">
+                    {bookmark && (
+                      <div className="absolute top-[16px] right-[16px] z-10">
+                        <BookmarkButton
+                          contentType={bookmark.contentType}
+                          contentId={bookmark.contentId}
+                          title={item.title}
+                          href={item.link}
+                          className="!w-[40px] !h-[40px]"
+                        />
+                      </div>
+                    )}
+
+                    <Link href={item.link} className="flex flex-col flex-1 min-h-0">
+                    <div className="flex flex-wrap items-center gap-[12px] mb-[20px] pr-[48px]">
                       <span
                         className="text-[11px] font-bold uppercase tracking-wider px-[12px] py-[6px] rounded-[6px] text-white shadow-sm"
                         style={{ backgroundColor: color }}
@@ -543,7 +569,8 @@ function RechercheContent({ initialData }: { initialData: SearchResultItem[] }) 
                       Consulter
                       <svg className="w-[6px] h-[10px] transition-transform group-hover:translate-x-1" viewBox="0 0 8 14" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 1l6 6-6 6" /></svg>
                     </div>
-                  </Link>
+                    </Link>
+                  </div>
                 );
               })}
             </div>

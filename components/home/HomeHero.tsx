@@ -103,7 +103,13 @@ export default function HomeHero({ articles }: { articles: PublicArticle[] }) {
               Lire l&apos;article
               <svg className="w-[6px] h-[10px]" viewBox="0 0 8 14" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 1l6 6-6 6" /></svg>
             </Link>
-            <BookmarkButton slug={current.slug} />
+            <BookmarkButton
+              contentType="article"
+              contentId={current.slug}
+              title={current.title}
+              href={`/articles/${current.slug}`}
+              thumbnailUrl={articleImage(current)}
+            />
           </div>
         </div>
       </div>
