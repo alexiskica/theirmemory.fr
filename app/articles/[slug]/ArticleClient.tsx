@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ArticleCard from '@/components/ArticleCard';
 import ArticleContentStyles from '@/components/article/ArticleContentStyles';
 import BookmarkButton from '@/components/home/BookmarkButton';
@@ -108,11 +108,34 @@ export default function ArticleClient({
   relatedArticles: PublicArticle[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const captionRef = useRef<HTMLDivElement>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [captionOpen, setCaptionOpen] = useState(false);
 
   const cover = article.cover_image_url || article.thumbnail_url;
   const color = categoryColor(article.category);
   const categorySlug = categorySlugFromLabel(article.category);
+
+  useEffect(() => {
+    if (!captionOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!captionRef.current?.contains(event.target as Node)) {
+        setCaptionOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setCaptionOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [captionOpen]);
 
   const handleShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'copy') => {
     const url = encodeURIComponent(window.location.href);
@@ -273,11 +296,25 @@ export default function ArticleClient({
           </div>
 
           {article.cover_image_caption && (
-            <div className="absolute bottom-[16px] left-[16px] sm:left-[24px] z-20 group/caption max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)]">
+            <div
+              ref={captionRef}
+              className="absolute bottom-[16px] left-[16px] sm:left-[24px] z-20 max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)]"
+            >
               <button
                 type="button"
-                aria-label="Afficher la description de la couverture"
-                className="w-[36px] h-[36px] rounded-full bg-black/45 backdrop-blur-sm border border-white/20 text-white/80 flex items-center justify-center hover:bg-black/65 hover:text-white hover:border-white/35 transition-colors cursor-pointer"
+                aria-label={
+                  captionOpen
+                    ? 'Masquer la description de la couverture'
+                    : 'Afficher la description de la couverture'
+                }
+                aria-expanded={captionOpen}
+                aria-controls="cover-caption"
+                onClick={() => setCaptionOpen((open) => !open)}
+                className={`w-[36px] h-[36px] rounded-full backdrop-blur-sm border flex items-center justify-center transition-colors cursor-pointer ${
+                  captionOpen
+                    ? 'bg-black/70 border-white/40 text-white'
+                    : 'bg-black/45 border-white/20 text-white/80 hover:bg-black/65 hover:text-white hover:border-white/35'
+                }`}
               >
                 <svg className="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <circle cx="12" cy="12" r="9" />
@@ -285,8 +322,14 @@ export default function ArticleClient({
                 </svg>
               </button>
               <div
+                id="cover-caption"
                 role="tooltip"
-                className="pointer-events-none absolute bottom-[calc(100%+10px)] left-0 w-[min(480px,100%)] px-[14px] py-[10px] rounded-[8px] bg-black/80 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] opacity-0 translate-y-[4px] group-hover/caption:opacity-100 group-hover/caption:translate-y-0 group-focus-within/caption:opacity-100 group-focus-within/caption:translate-y-0 transition-all duration-200"
+                aria-hidden={!captionOpen}
+                className={`absolute bottom-[calc(100%+10px)] left-0 w-[min(480px,100%)] px-[14px] py-[10px] rounded-[8px] bg-black/80 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] transition-all duration-200 ${
+                  captionOpen
+                    ? 'opacity-100 translate-y-0 pointer-events-auto'
+                    : 'opacity-0 translate-y-[4px] pointer-events-none'
+                }`}
               >
                 {article.cover_image_caption}
               </div>
