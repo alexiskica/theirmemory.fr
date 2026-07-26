@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function VideosPage() {
-  const { horizontalVideos, verticalVideos } = await getVideosPageData();
+  const { rails, horizontalVideos, verticalVideos } = await getVideosPageData();
 
   const jsonLd = buildCollectionPageJsonLd({
     name: 'Vidéos — Their memory',
@@ -32,7 +32,11 @@ export default async function VideosPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <VideosClient horizontalVideos={horizontalVideos} verticalVideos={verticalVideos} />
+      <VideosClient
+        rails={rails}
+        horizontalVideos={horizontalVideos}
+        verticalVideos={verticalVideos}
+      />
     </main>
   );
 }

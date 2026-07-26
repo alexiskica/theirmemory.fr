@@ -12,10 +12,11 @@ import PageHero from '@/components/layout/PageHero';
 import SectionHeader from '@/components/layout/SectionHeader';
 import SiteSection from '@/components/layout/SiteSection';
 import { videoToMediaPreview, type MediaPreviewItem } from '@/lib/media-preview';
-import type { PublicVideo } from '@/lib/media-types';
+import type { PublicVideo, VideosPageRail } from '@/lib/media-types';
 import { categoryLabelFromSlug } from '@/lib/site-config';
 
 type VideosClientProps = {
+  rails: VideosPageRail[];
   horizontalVideos: PublicVideo[];
   verticalVideos: PublicVideo[];
 };
@@ -25,11 +26,22 @@ function filterByCategory<T extends { category: string }>(items: T[], categoryLa
   return items.filter((item) => item.category === categoryLabel);
 }
 
-function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) {
+function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClientProps) {
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get('categorie');
   const activeLabel = activeCategory ? categoryLabelFromSlug(activeCategory) : undefined;
   const [preview, setPreview] = useState<MediaPreviewItem | null>(null);
+
+  const filteredRails = useMemo(
+    () =>
+      rails
+        .map((rail) => ({
+          ...rail,
+          videos: filterByCategory(rail.videos, activeLabel),
+        }))
+        .filter((rail) => rail.videos.length > 0),
+    [rails, activeLabel]
+  );
 
   const filteredHorizontal = useMemo(
     () => filterByCategory(horizontalVideos, activeLabel),
@@ -41,7 +53,20 @@ function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) 
   );
 
   const pageTitle = activeLabel ?? 'Vidéos';
-  const hasResults = filteredHorizontal.length > 0 || filteredVertical.length > 0;
+  const useCatalogFallback = filteredRails.length === 0;
+  const hasResults =
+    filteredRails.length > 0 ||
+    (useCatalogFallback &&
+      (filteredHorizontal.length > 0 || filteredVertical.length > 0));
+
+  const openPreview = (video: PublicVideo) => {
+    setPreview(
+      videoToMediaPreview(
+        video,
+        video.aspectRatio === '9:16' ? 'vertical' : 'horizontal'
+      )
+    );
+  };
 
   return (
     <>
@@ -63,7 +88,47 @@ function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) 
 
       {hasResults ? (
         <>
-          {filteredHorizontal.length > 0 && (
+          {filteredRails.map((rail) => {
+            const headingId = `rail-${rail.id}-heading`;
+            const preferVertical = rail.aspectRatio === '9:16';
+            const scrollStep = preferVertical ? 220 : 580;
+
+            return (
+              <SiteSection key={rail.id} id={`rail-${rail.slug || rail.id}`} aria-labelledby={headingId}>
+                <SectionHeader titleId={headingId} title={rail.title} />
+
+                <MediaCarousel
+                  scrollStep={scrollStep}
+                  ariaLabelPrev="Vidéo précédente"
+                  ariaLabelNext="Vidéo suivante"
+                >
+                  {rail.videos.map((video) => {
+                    const isVertical = preferVertical || video.aspectRatio === '9:16';
+                    if (isVertical) {
+                      return (
+                        <VerticalVideoCard
+                          key={`${rail.id}-${video.id}`}
+                          video={video}
+                          onClick={() => openPreview(video)}
+                          className="shrink-0 w-[200px] max-[900px]:w-[160px]"
+                        />
+                      );
+                    }
+                    return (
+                      <HorizontalVideoCard
+                        key={`${rail.id}-${video.id}`}
+                        video={video}
+                        onClick={() => openPreview(video)}
+                        className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
+                      />
+                    );
+                  })}
+                </MediaCarousel>
+              </SiteSection>
+            );
+          })}
+
+          {filteredHorizontal.length > 0 && useCatalogFallback && (
             <SiteSection
               id="videos-horizontales"
               aria-labelledby={activeLabel ? undefined : 'videos-horizontal-heading'}
@@ -84,7 +149,7 @@ function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) 
                   <HorizontalVideoCard
                     key={video.id}
                     video={video}
-                    onClick={() => setPreview(videoToMediaPreview(video, 'horizontal'))}
+                    onClick={() => openPreview(video)}
                     className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
                   />
                 ))}
@@ -92,7 +157,7 @@ function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) 
             </SiteSection>
           )}
 
-          {filteredVertical.length > 0 && (
+          {filteredVertical.length > 0 && useCatalogFallback && (
             <SiteSection
               id="videos-verticales"
               aria-labelledby={activeLabel ? undefined : 'videos-vertical-heading'}
@@ -113,7 +178,7 @@ function VideosContent({ horizontalVideos, verticalVideos }: VideosClientProps) 
                   <VerticalVideoCard
                     key={video.id}
                     video={video}
-                    onClick={() => setPreview(videoToMediaPreview(video, 'vertical'))}
+                    onClick={() => openPreview(video)}
                     className="shrink-0 w-[200px] max-[900px]:w-[160px]"
                   />
                 ))}
@@ -162,10 +227,18 @@ function VideosFallback() {
   );
 }
 
-export default function VideosClient({ horizontalVideos, verticalVideos }: VideosClientProps) {
+export default function VideosClient({
+  rails,
+  horizontalVideos,
+  verticalVideos,
+}: VideosClientProps) {
   return (
     <Suspense fallback={<VideosFallback />}>
-      <VideosContent horizontalVideos={horizontalVideos} verticalVideos={verticalVideos} />
+      <VideosContent
+        rails={rails}
+        horizontalVideos={horizontalVideos}
+        verticalVideos={verticalVideos}
+      />
     </Suspense>
   );
 }

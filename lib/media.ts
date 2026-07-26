@@ -12,6 +12,7 @@ import type {
   PublicPodcast,
   PublicVideo,
   VideosPageData,
+  VideosPageRail,
 } from '@/lib/media-types';
 
 const VIDEO_SELECT =
@@ -223,12 +224,14 @@ function mapVerticalPlaceholder(video: VerticalVideoPlaceholder): PublicVideo {
 }
 
 export async function getVideosPageData(): Promise<VideosPageData> {
-  const [horizontalFromDb, verticalFromDb] = await Promise.all([
+  const [horizontalFromDb, verticalFromDb, rails] = await Promise.all([
     getPublishedVideos({ aspectRatio: '16:9' }),
     getPublishedVideos({ aspectRatio: '9:16' }),
+    getFeaturedVideoRails(),
   ]);
 
   return {
+    rails,
     horizontalVideos:
       horizontalFromDb.length > 0
         ? horizontalFromDb
@@ -242,6 +245,89 @@ export async function getVideosPageData(): Promise<VideosPageData> {
           ? VERTICAL_VIDEO_PLACEHOLDERS.map(mapVerticalPlaceholder)
           : [],
   };
+}
+
+type RawFeaturedPlaylist = {
+  id: string;
+  title: string;
+  slug: string | null;
+  aspect_ratio: MediaAspectRatio;
+  videos_page_position: number;
+  playlist_videos:
+    | Array<{
+        position: number;
+        videos: RawVideo | null;
+      }>
+    | null;
+};
+
+export async function getFeaturedVideoRails(): Promise<VideosPageRail[]> {
+  if (!isSupabaseConfigured()) return [];
+
+  try {
+    const supabase = createPublicClient();
+    const now = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .schema('studio')
+      .from('playlists')
+      .select(
+        `
+        id,
+        title,
+        slug,
+        aspect_ratio,
+        videos_page_position,
+        playlist_videos (
+          position,
+          videos (
+            ${VIDEO_SELECT}
+          )
+        )
+      `
+      )
+      .eq('status', 'published')
+      .eq('show_on_videos_page', true)
+      .order('videos_page_position', { ascending: true });
+
+    if (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[media] getFeaturedVideoRails:', error.message, error);
+      }
+      return [];
+    }
+    if (!data?.length) return [];
+
+    return (data as RawFeaturedPlaylist[])
+      .map((playlist) => {
+        const links = [...(playlist.playlist_videos ?? [])].sort(
+          (a, b) => (a.position ?? 0) - (b.position ?? 0)
+        );
+
+        const videos = links
+          .map((link) => link.videos)
+          .filter((video): video is RawVideo => {
+            if (!video) return false;
+            if (!video.published_at) return false;
+            return video.published_at <= now;
+          })
+          .map(mapVideo);
+
+        return {
+          id: playlist.id,
+          title: playlist.title,
+          slug: playlist.slug,
+          aspectRatio: mapAspectRatio(playlist.aspect_ratio),
+          videos,
+        };
+      })
+      .filter((rail) => rail.videos.length > 0);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[media] getFeaturedVideoRails:', error);
+    }
+    return [];
+  }
 }
 
 export async function getPodcastsPageData(): Promise<PublicPodcast[]> {

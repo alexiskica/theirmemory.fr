@@ -49,7 +49,17 @@ export type HomepageMediaData = {
   podcasts: PublicPodcast[];
 };
 
+export type VideosPageRail = {
+  id: string;
+  title: string;
+  slug: string | null;
+  aspectRatio: MediaAspectRatio;
+  videos: PublicVideo[];
+};
+
 export type VideosPageData = {
+  /** Sélections / playlists paramétrées depuis Studio (rails type Netflix). */
+  rails: VideosPageRail[];
   horizontalVideos: PublicVideo[];
   verticalVideos: PublicVideo[];
 };
