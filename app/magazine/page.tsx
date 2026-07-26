@@ -3,6 +3,7 @@ import MagazineCatalogClient from './MagazineCatalogClient';
 import MagazineTeaserClient from './MagazineTeaserClient';
 import { MAGAZINE_LAUNCHED } from '@/lib/magazine-config';
 import { getLatestMagazineIssue } from '@/lib/magazine-data';
+import { buildPageMetadata } from '@/lib/seo';
 import { MAGAZINE_NAME, SITE_URL } from '@/lib/site-config';
 
 const teaserDescription = `${MAGAZINE_NAME} arrive bientôt : un magazine trimestriel entièrement consacré à la Seconde Guerre mondiale. Enquêtes, portraits et dossiers iconographiques.`;
@@ -10,15 +11,13 @@ const teaserDescription = `${MAGAZINE_NAME} arrive bientôt : un magazine trimes
 const catalogDescription = `${MAGAZINE_NAME} : un numéro trimestriel, chaque édition explorant une thématique de la Seconde Guerre mondiale. Commandez le dernier numéro, consultez gratuitement les éditions précédentes.`;
 
 export const metadata: Metadata = {
-  title: MAGAZINE_NAME,
-  description: MAGAZINE_LAUNCHED ? catalogDescription : teaserDescription,
-  alternates: { canonical: `${SITE_URL}/magazine` },
-  openGraph: {
-    title: MAGAZINE_NAME,
+  ...buildPageMetadata({
+    pageDescription: MAGAZINE_LAUNCHED
+      ? `Magazine ${MAGAZINE_NAME}`
+      : `Magazine ${MAGAZINE_NAME} — bientôt`,
     description: MAGAZINE_LAUNCHED ? catalogDescription : teaserDescription,
-    url: `${SITE_URL}/magazine`,
-    type: 'website',
-  },
+    path: '/magazine',
+  }),
 };
 
 export default function MagazinePage() {

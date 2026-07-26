@@ -14,6 +14,7 @@ export type PublicArticle = {
   html_content: string | null;
   read_time: number | null;
   published_at: string | null;
+  updated_at: string | null;
   excerpt: string;
   category: string;
   secondary_categories: string[];
@@ -35,6 +36,7 @@ type RawArticle = {
   module_content: unknown;
   read_time: number | null;
   published_at: string | null;
+  updated_at?: string | null;
 };
 
 function mapArticle(row: RawArticle): PublicArticle {
@@ -51,6 +53,7 @@ function mapArticle(row: RawArticle): PublicArticle {
     html_content: row.html_content,
     read_time: row.read_time != null ? Number(row.read_time) : null,
     published_at: row.published_at,
+    updated_at: row.updated_at ?? null,
     excerpt: meta.excerpt,
     category: meta.category,
     secondary_categories: meta.secondary_categories,
@@ -61,7 +64,7 @@ function mapArticle(row: RawArticle): PublicArticle {
 }
 
 const ARTICLE_SELECT =
-  'id, title, slug, display_author, thumbnail_url, cover_image_url, cover_image_credit, cover_image_caption, html_content, module_content, read_time, published_at';
+  'id, title, slug, display_author, thumbnail_url, cover_image_url, cover_image_credit, cover_image_caption, html_content, module_content, read_time, published_at, updated_at';
 
 export async function getPublishedArticles(options?: {
   categorySlug?: string;

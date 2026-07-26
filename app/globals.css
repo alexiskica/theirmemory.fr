@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./auth-page.css";
 
 @theme {
   --font-sans: var(--font-open-sans), system-ui, -apple-system, sans-serif;

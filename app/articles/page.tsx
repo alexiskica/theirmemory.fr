@@ -4,21 +4,21 @@ import {
   HOMEPAGE_ARTICLE_PLACEHOLDERS,
   USE_HOMEPAGE_PLACEHOLDERS,
 } from '@/lib/homepage-placeholders';
+import { buildCollectionPageJsonLd, buildPageMetadata } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site-config';
 import ArticlesClient from './ArticlesClient';
 
 export const revalidate = 60;
 
+const description =
+  'Actualités, culture, politique, militaire, Résistance & Déportation, technologies et biographies publiés par Their memory.';
+
 export const metadata: Metadata = {
-  title: 'Articles',
-  description:
-    'Actualités, culture, politique, militaire, Résistance & Déportation, technologies et biographies publiés par Their memory.',
-  alternates: { canonical: `${SITE_URL}/articles` },
-  openGraph: {
-    title: 'Articles',
-    url: `${SITE_URL}/articles`,
-    type: 'website',
-  },
+  ...buildPageMetadata({
+    pageDescription: 'Articles d’histoire et de mémoire',
+    description,
+    path: '/articles',
+  }),
 };
 
 export default async function ArticlesPage() {
@@ -30,8 +30,18 @@ export default async function ArticlesPage() {
         ? HOMEPAGE_ARTICLE_PLACEHOLDERS
         : [];
 
+  const jsonLd = buildCollectionPageJsonLd({
+    name: 'Articles — Their memory',
+    description,
+    url: `${SITE_URL}/articles`,
+  });
+
   return (
     <main className="w-full min-h-screen bg-page font-['Open_Sans',sans-serif]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ArticlesClient articles={articles} />
     </main>
   );

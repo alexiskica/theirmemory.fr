@@ -63,6 +63,7 @@ export const DEMO_ARTICLE_FULL: PublicArticle = {
   html_content: DEMO_HTML,
   read_time: 8,
   published_at: '2025-05-28T09:00:00.000Z',
+  updated_at: '2025-05-28T09:00:00.000Z',
   excerpt:
     'Retour sur les opérations du 6 juin 1944 et sur la manière dont la mémoire du D-Day continue de structurer le récit européen.',
   category: 'Militaire',

@@ -199,11 +199,11 @@ export default function Footer() {
             <span className="text-white/15 hidden sm:inline">|</span>
             <Link href="/plan-du-site" className="hover:underline hover:text-[#7F7F7F]">Plan du site</Link>
             <span className="text-white/15 hidden sm:inline">|</span>
-            <a href={`${INSTITUTIONAL_SITE_URL}/mentions-legales`} className="hover:underline hover:text-[#7F7F7F]">Mentions légales</a>
+            <Link href="/mentions-legales" className="hover:underline hover:text-[#7F7F7F]">Mentions légales</Link>
             <span className="text-white/15 hidden sm:inline">|</span>
-            <a href={`${INSTITUTIONAL_SITE_URL}/politique-de-confidentialite`} className="hover:underline hover:text-[#7F7F7F]">Politique de confidentialité</a>
+            <Link href="/politique-de-confidentialite" className="hover:underline hover:text-[#7F7F7F]">Politique de confidentialité</Link>
             <span className="text-white/15 hidden sm:inline">|</span>
-            <a href={`${INSTITUTIONAL_SITE_URL}/cgu`} className="hover:underline hover:text-[#7F7F7F]">CGU</a>
+            <Link href="/cgu" className="hover:underline hover:text-[#7F7F7F]">CGU</Link>
             <span className="text-white/15 hidden sm:inline">|</span>
             <button type="button" onClick={() => window.dispatchEvent(new Event('openCookieSettings'))} className="hover:underline hover:text-[#7F7F7F] cursor-pointer">
               Gestion des cookies

@@ -209,17 +209,15 @@ export default function ArticleClient({
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-[24px] border-t border-white/20 pt-[24px]">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-[12px] sm:gap-[16px] text-white/90 text-[15px] font-semibold">
-                  {article.display_author && (
-                    <span className="flex items-center gap-[6px] text-white">
-                      <span className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                        <svg className="w-[16px] h-[16px] text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </span>
-                      {article.display_author}
+                  <span className="flex items-center gap-[6px] text-white">
+                    <span className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                      <svg className="w-[16px] h-[16px] text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
                     </span>
-                  )}
-                  {article.display_author && (article.published_at || article.read_time) && (
+                    {article.display_author?.trim() || 'Rédaction Their memory'}
+                  </span>
+                  {(article.published_at || article.read_time) && (
                     <span className="w-[4px] h-[4px] rounded-full bg-white/50 hidden sm:block" />
                   )}
                   <div className="flex items-center gap-[12px] sm:gap-[16px]">

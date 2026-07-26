@@ -12,6 +12,7 @@ import {
   MAGAZINE_ISSUES,
 } from '@/lib/magazine-data';
 import { MAGAZINE_NAME, MAGAZINE_ORDER_URL, SITE_URL } from '@/lib/site-config';
+import { buildPageMetadata, formatSiteTitle } from '@/lib/seo';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -29,20 +30,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const issue = getMagazineIssueBySlug(slug);
 
   if (!issue) {
-    return { title: 'Numéro introuvable' };
+    return {
+      title: { absolute: formatSiteTitle('Numéro introuvable') },
+    };
   }
 
-  return {
-    title: `${issue.title} — N°${issue.number}`,
+  return buildPageMetadata({
+    pageDescription: `${MAGAZINE_NAME} N°${issue.number} — ${issue.title}`,
     description: issue.description,
-    alternates: { canonical: `${SITE_URL}/magazine/${issue.slug}` },
-    openGraph: {
-      title: `${issue.title} | ${MAGAZINE_NAME}`,
-      description: issue.subtitle,
-      url: `${SITE_URL}/magazine/${issue.slug}`,
-      type: 'article',
-    },
-  };
+    path: `/magazine/${issue.slug}`,
+  });
 }
 
 export default async function MagazineIssuePage({ params }: PageProps) {

@@ -1,8 +1,8 @@
 import type { PublicArticle } from '@/lib/articles';
 
-/** Mettre à false (ou NEXT_PUBLIC_USE_HOMEPAGE_PLACEHOLDERS=false) pour brancher Supabase */
+/** Mettre à true pour forcer les données fictives en local. Désactivé par défaut (SEO / prod). */
 export const USE_HOMEPAGE_PLACEHOLDERS =
-  process.env.NEXT_PUBLIC_USE_HOMEPAGE_PLACEHOLDERS !== 'false';
+  process.env.NEXT_PUBLIC_USE_HOMEPAGE_PLACEHOLDERS === 'true';
 
 /** Images de démonstration — seeds fixes pour un rendu stable entre les builds */
 function demoImage(seed: string, width = 1200, height = 750) {
@@ -11,6 +11,7 @@ function demoImage(seed: string, width = 1200, height = 750) {
 
 const emptyMeta = {
   cover_image_caption: null as string | null,
+  updated_at: null as string | null,
   secondary_categories: [] as string[],
   tags: [] as string[],
   attachments: [] as PublicArticle['attachments'],

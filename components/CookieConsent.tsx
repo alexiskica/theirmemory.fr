@@ -79,7 +79,11 @@ export default function CookieConsent() {
             <div className="flex flex-col flex-1">
               <h3 className="text-[18px] font-bold text-[#000] mb-[8px]">À propos de vos cookies</h3>
               <p className="text-[#404040] text-[14px] leading-[1.5] max-w-[800px]">
-                Nous utilisons des cookies pour vous offrir la meilleure expérience sur notre site, mesurer l'audience et personnaliser notre communication. Vous pouvez choisir d'accepter, de refuser ou de personnaliser votre consentement. 
+                Nous utilisons des cookies pour vous offrir la meilleure expérience sur notre site, mesurer l&apos;audience et personnaliser notre communication. Vous pouvez choisir d&apos;accepter, de refuser ou de personnaliser votre consentement. Pour en savoir plus, consultez notre{' '}
+                <a href="/politique-de-confidentialite" className="underline font-semibold text-[#000] hover:text-[#404040]">
+                  politique de confidentialité
+                </a>
+                .
               </p>
             </div>
 

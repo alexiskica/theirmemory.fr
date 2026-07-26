@@ -1,0 +1,8 @@
+.auth-page-background {
+  background-color: #000000;
+}
+
+.auth-page-background::before,
+.auth-page-background::after {
+  content: none;
+}

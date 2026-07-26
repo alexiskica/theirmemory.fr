@@ -6,25 +6,18 @@ import VerticalVideos from '@/components/home/VerticalVideos';
 import PodcastsSection from '@/components/home/PodcastsSection';
 import { getHomepageData } from '@/lib/homepage';
 import { getHomepageMediaData } from '@/lib/media';
-import { SITE_NAME, SITE_URL } from '@/lib/site-config';
-import { buildWebSiteJsonLd } from '@/lib/seo';
+import { buildPageMetadata } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site-config';
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: { absolute: SITE_NAME },
-  description:
-    'Articles, magazine, vidéos et podcasts Their memory : histoire, mémoire, Résistance, biographies et actualités.',
-  alternates: { canonical: SITE_URL },
-  openGraph: {
-    title: SITE_NAME,
+  ...buildPageMetadata({
+    pageDescription: 'Articles, magazine, vidéos et podcasts',
     description:
-      'Découvrez les contenus de Their memory : articles, vidéos et podcasts sur l\'histoire et la mémoire.',
-    url: SITE_URL,
-    type: 'website',
-    locale: 'fr_FR',
-    siteName: SITE_NAME,
-  },
+      'Médias Their memory : articles, magazine, vidéos et podcasts sur l’histoire, la mémoire, la Résistance et la Déportation.',
+    path: '/',
+  }),
 };
 
 export default async function HomePage() {
@@ -50,7 +43,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([buildWebSiteJsonLd(), itemListJsonLd]),
+          __html: JSON.stringify(itemListJsonLd),
         }}
       />
 
