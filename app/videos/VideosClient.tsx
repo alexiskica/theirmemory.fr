@@ -21,9 +21,36 @@ type VideosClientProps = {
   verticalVideos: PublicVideo[];
 };
 
+type FormatRail = {
+  id: string;
+  title: string;
+  slug: string | null;
+  videos: PublicVideo[];
+};
+
 function filterByCategory<T extends { category: string }>(items: T[], categoryLabel?: string) {
   if (!categoryLabel) return items;
   return items.filter((item) => item.category === categoryLabel);
+}
+
+function railsForAspect(
+  rails: VideosPageRail[],
+  aspect: '16:9' | '9:16',
+  categoryLabel?: string
+): FormatRail[] {
+  return rails
+    .map((rail) => ({
+      id: rail.id,
+      title: rail.title,
+      slug: rail.slug,
+      videos: filterByCategory(
+        rail.videos.filter((video) =>
+          aspect === '9:16' ? video.aspectRatio === '9:16' : video.aspectRatio !== '9:16'
+        ),
+        categoryLabel
+      ),
+    }))
+    .filter((rail) => rail.videos.length > 0);
 }
 
 function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClientProps) {
@@ -32,14 +59,12 @@ function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClient
   const activeLabel = activeCategory ? categoryLabelFromSlug(activeCategory) : undefined;
   const [preview, setPreview] = useState<MediaPreviewItem | null>(null);
 
-  const filteredRails = useMemo(
-    () =>
-      rails
-        .map((rail) => ({
-          ...rail,
-          videos: filterByCategory(rail.videos, activeLabel),
-        }))
-        .filter((rail) => rail.videos.length > 0),
+  const horizontalRails = useMemo(
+    () => railsForAspect(rails, '16:9', activeLabel),
+    [rails, activeLabel]
+  );
+  const verticalRails = useMemo(
+    () => railsForAspect(rails, '9:16', activeLabel),
     [rails, activeLabel]
   );
 
@@ -53,19 +78,12 @@ function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClient
   );
 
   const pageTitle = activeLabel ?? 'Vidéos';
-  const useCatalogFallback = filteredRails.length === 0;
-  const hasResults =
-    filteredRails.length > 0 ||
-    (useCatalogFallback &&
-      (filteredHorizontal.length > 0 || filteredVertical.length > 0));
+  const hasHorizontal = horizontalRails.length > 0 || filteredHorizontal.length > 0;
+  const hasVertical = verticalRails.length > 0 || filteredVertical.length > 0;
+  const hasResults = hasHorizontal || hasVertical;
 
-  const openPreview = (video: PublicVideo) => {
-    setPreview(
-      videoToMediaPreview(
-        video,
-        video.aspectRatio === '9:16' ? 'vertical' : 'horizontal'
-      )
-    );
+  const openPreview = (video: PublicVideo, orientation: 'horizontal' | 'vertical') => {
+    setPreview(videoToMediaPreview(video, orientation));
   };
 
   return (
@@ -88,47 +106,7 @@ function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClient
 
       {hasResults ? (
         <>
-          {filteredRails.map((rail) => {
-            const headingId = `rail-${rail.id}-heading`;
-            const preferVertical = rail.aspectRatio === '9:16';
-            const scrollStep = preferVertical ? 220 : 580;
-
-            return (
-              <SiteSection key={rail.id} id={`rail-${rail.slug || rail.id}`} aria-labelledby={headingId}>
-                <SectionHeader titleId={headingId} title={rail.title} />
-
-                <MediaCarousel
-                  scrollStep={scrollStep}
-                  ariaLabelPrev="Vidéo précédente"
-                  ariaLabelNext="Vidéo suivante"
-                >
-                  {rail.videos.map((video) => {
-                    const isVertical = preferVertical || video.aspectRatio === '9:16';
-                    if (isVertical) {
-                      return (
-                        <VerticalVideoCard
-                          key={`${rail.id}-${video.id}`}
-                          video={video}
-                          onClick={() => openPreview(video)}
-                          className="shrink-0 w-[200px] max-[900px]:w-[160px]"
-                        />
-                      );
-                    }
-                    return (
-                      <HorizontalVideoCard
-                        key={`${rail.id}-${video.id}`}
-                        video={video}
-                        onClick={() => openPreview(video)}
-                        className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
-                      />
-                    );
-                  })}
-                </MediaCarousel>
-              </SiteSection>
-            );
-          })}
-
-          {filteredHorizontal.length > 0 && useCatalogFallback && (
+          {hasHorizontal && (
             <SiteSection
               id="videos-horizontales"
               aria-labelledby={activeLabel ? undefined : 'videos-horizontal-heading'}
@@ -144,20 +122,50 @@ function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClient
                 />
               )}
 
-              <MediaCarousel scrollStep={580} ariaLabelPrev="Vidéo précédente" ariaLabelNext="Vidéo suivante">
-                {filteredHorizontal.map((video) => (
-                  <HorizontalVideoCard
-                    key={video.id}
-                    video={video}
-                    onClick={() => openPreview(video)}
-                    className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
-                  />
-                ))}
-              </MediaCarousel>
+              {horizontalRails.length > 0 ? (
+                <div className="flex flex-col gap-[40px] max-[900px]:gap-[28px]">
+                  {horizontalRails.map((rail) => (
+                    <div key={`h-${rail.id}`}>
+                      <h3 className="text-white text-[22px] max-[900px]:text-[18px] font-semibold mb-[16px]">
+                        {rail.title}
+                      </h3>
+                      <MediaCarousel
+                        scrollStep={580}
+                        ariaLabelPrev="Vidéo précédente"
+                        ariaLabelNext="Vidéo suivante"
+                      >
+                        {rail.videos.map((video) => (
+                          <HorizontalVideoCard
+                            key={`${rail.id}-${video.id}`}
+                            video={video}
+                            onClick={() => openPreview(video, 'horizontal')}
+                            className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
+                          />
+                        ))}
+                      </MediaCarousel>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <MediaCarousel
+                  scrollStep={580}
+                  ariaLabelPrev="Vidéo précédente"
+                  ariaLabelNext="Vidéo suivante"
+                >
+                  {filteredHorizontal.map((video) => (
+                    <HorizontalVideoCard
+                      key={video.id}
+                      video={video}
+                      onClick={() => openPreview(video, 'horizontal')}
+                      className="shrink-0 w-[560px] max-[900px]:w-[calc(100vw-48px)]"
+                    />
+                  ))}
+                </MediaCarousel>
+              )}
             </SiteSection>
           )}
 
-          {filteredVertical.length > 0 && useCatalogFallback && (
+          {hasVertical && (
             <SiteSection
               id="videos-verticales"
               aria-labelledby={activeLabel ? undefined : 'videos-vertical-heading'}
@@ -173,16 +181,46 @@ function VideosContent({ rails, horizontalVideos, verticalVideos }: VideosClient
                 />
               )}
 
-              <MediaCarousel scrollStep={220} ariaLabelPrev="Vidéo précédente" ariaLabelNext="Vidéo suivante">
-                {filteredVertical.map((video) => (
-                  <VerticalVideoCard
-                    key={video.id}
-                    video={video}
-                    onClick={() => openPreview(video)}
-                    className="shrink-0 w-[200px] max-[900px]:w-[160px]"
-                  />
-                ))}
-              </MediaCarousel>
+              {verticalRails.length > 0 ? (
+                <div className="flex flex-col gap-[40px] max-[900px]:gap-[28px]">
+                  {verticalRails.map((rail) => (
+                    <div key={`v-${rail.id}`}>
+                      <h3 className="text-white text-[22px] max-[900px]:text-[18px] font-semibold mb-[16px]">
+                        {rail.title}
+                      </h3>
+                      <MediaCarousel
+                        scrollStep={220}
+                        ariaLabelPrev="Vidéo précédente"
+                        ariaLabelNext="Vidéo suivante"
+                      >
+                        {rail.videos.map((video) => (
+                          <VerticalVideoCard
+                            key={`${rail.id}-${video.id}`}
+                            video={video}
+                            onClick={() => openPreview(video, 'vertical')}
+                            className="shrink-0 w-[200px] max-[900px]:w-[160px]"
+                          />
+                        ))}
+                      </MediaCarousel>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <MediaCarousel
+                  scrollStep={220}
+                  ariaLabelPrev="Vidéo précédente"
+                  ariaLabelNext="Vidéo suivante"
+                >
+                  {filteredVertical.map((video) => (
+                    <VerticalVideoCard
+                      key={video.id}
+                      video={video}
+                      onClick={() => openPreview(video, 'vertical')}
+                      className="shrink-0 w-[200px] max-[900px]:w-[160px]"
+                    />
+                  ))}
+                </MediaCarousel>
+              )}
             </SiteSection>
           )}
         </>
