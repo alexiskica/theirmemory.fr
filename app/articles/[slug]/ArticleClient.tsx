@@ -150,19 +150,31 @@ export default function ArticleClient({
   return (
     <>
       <ArticleContentStyles />
-      <main className="w-full min-h-screen bg-page font-['Open_Sans',sans-serif]">
-        {/* Hero plein écran */}
-        <section className="relative w-full min-h-[100dvh] flex flex-col pt-[184px] max-[900px]:pt-[128px] pb-[64px] md:pb-[80px]">
-          <div className="absolute inset-0 w-full h-full z-0">
+      <main className="w-full min-h-screen bg-page font-['Open_Sans',sans-serif] overflow-x-clip">
+        {/* Hero plein écran — hauteur viewport + overflow pour iOS Safari */}
+        <section className="relative w-full max-w-[100%] flex flex-col pt-[184px] max-[900px]:pt-[128px] pb-[64px] md:pb-[80px] overflow-hidden h-[100svh] h-[100dvh]">
+          <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden={!cover}>
             {cover ? (
-              <Image src={cover} alt="" fill priority sizes="100vw" className="object-cover" />
+              <Image
+                src={cover}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-center"
+                style={{
+                  // Légère surcouverture pour éviter les filets de 1px sur iPhone
+                  transform: 'scale(1.03)',
+                  transformOrigin: 'center center',
+                }}
+              />
             ) : (
-              <div className="w-full h-full bg-[#111]" />
+              <div className="absolute inset-0 bg-[#111]" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/20 pointer-events-none" />
           </div>
 
-          <div className="relative z-10 w-full max-w-[1200px] mx-auto px-[24px] flex flex-col flex-1">
+          <div className="relative z-10 w-full max-w-[1200px] mx-auto px-[24px] max-[900px]:px-[16px] flex flex-col flex-1">
             <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-[8px] text-white/80 text-[14px] mb-[32px]">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
               <span>/</span>
@@ -261,7 +273,7 @@ export default function ArticleClient({
           </div>
 
           {article.cover_image_caption && (
-            <div className="absolute bottom-[16px] left-[24px] z-20 group/caption">
+            <div className="absolute bottom-[16px] left-[16px] sm:left-[24px] z-20 group/caption max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)]">
               <button
                 type="button"
                 aria-label="Afficher la description de la couverture"
@@ -274,7 +286,7 @@ export default function ArticleClient({
               </button>
               <div
                 role="tooltip"
-                className="pointer-events-none absolute bottom-[calc(100%+10px)] left-0 w-max max-w-[min(480px,calc(100vw-48px))] px-[14px] py-[10px] rounded-[8px] bg-black/80 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] opacity-0 translate-y-[4px] group-hover/caption:opacity-100 group-hover/caption:translate-y-0 group-focus-within/caption:opacity-100 group-focus-within/caption:translate-y-0 transition-all duration-200"
+                className="pointer-events-none absolute bottom-[calc(100%+10px)] left-0 w-[min(480px,100%)] px-[14px] py-[10px] rounded-[8px] bg-black/80 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] opacity-0 translate-y-[4px] group-hover/caption:opacity-100 group-hover/caption:translate-y-0 group-focus-within/caption:opacity-100 group-focus-within/caption:translate-y-0 transition-all duration-200"
               >
                 {article.cover_image_caption}
               </div>
@@ -282,7 +294,7 @@ export default function ArticleClient({
           )}
 
           {article.cover_image_credit && (
-            <div className="absolute bottom-[16px] right-[24px] text-white/50 text-[11px] font-light uppercase tracking-wider z-10 hidden sm:block text-right max-w-[calc(100%-48px)] line-clamp-2">
+            <div className="absolute bottom-[16px] right-[16px] sm:right-[24px] text-white/50 text-[11px] font-light uppercase tracking-wider z-10 hidden sm:block text-right max-w-[min(360px,calc(100%-48px))] line-clamp-2">
               {article.cover_image_credit}
             </div>
           )}

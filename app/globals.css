@@ -8,9 +8,18 @@
   --color-surface: #141414;
 }
 
+html {
+  width: 100%;
+  overflow-x: clip;
+}
+
 body {
   background-color: #000000;
   color: #ffffff;
+  width: 100%;
+  overflow-x: clip;
+  /* Évite les bandes latérales sur iOS Safari */
+  min-width: 100%;
 }
 
 .article-content img {

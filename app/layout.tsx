@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { Open_Sans } from 'next/font/google';
 import './globals.css';
@@ -20,6 +20,13 @@ const openSans = Open_Sans({
   display: 'swap',
   variable: '--font-open-sans',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#000000',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
