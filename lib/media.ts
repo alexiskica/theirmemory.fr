@@ -256,10 +256,18 @@ type RawFeaturedPlaylist = {
   playlist_videos:
     | Array<{
         position: number;
-        videos: RawVideo | null;
+        videos: RawVideo | RawVideo[] | null;
       }>
     | null;
 };
+
+function unwrapNestedVideo(
+  value: RawVideo | RawVideo[] | null | undefined
+): RawVideo | null {
+  if (!value) return null;
+  if (Array.isArray(value)) return value[0] ?? null;
+  return value;
+}
 
 export async function getFeaturedVideoRails(): Promise<VideosPageRail[]> {
   if (!isSupabaseConfigured()) return [];
@@ -298,14 +306,14 @@ export async function getFeaturedVideoRails(): Promise<VideosPageRail[]> {
     }
     if (!data?.length) return [];
 
-    return (data as RawFeaturedPlaylist[])
+    return (data as unknown as RawFeaturedPlaylist[])
       .map((playlist) => {
         const links = [...(playlist.playlist_videos ?? [])].sort(
           (a, b) => (a.position ?? 0) - (b.position ?? 0)
         );
 
         const videos = links
-          .map((link) => link.videos)
+          .map((link) => unwrapNestedVideo(link.videos))
           .filter((video): video is RawVideo => {
             if (!video) return false;
             if (!video.published_at) return false;
