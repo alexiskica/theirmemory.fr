@@ -212,7 +212,11 @@ export default function ArticleClient({
               )}
             </nav>
 
-            <div className="mt-auto flex flex-col">
+            <div
+              className={`mt-auto flex flex-col ${
+                article.cover_image_caption ? 'max-[900px]:pb-[56px]' : ''
+              }`}
+            >
               <div className="flex flex-wrap items-center gap-[8px] mb-[24px]">
                 {categorySlug && (
                   <Link
@@ -290,47 +294,51 @@ export default function ArticleClient({
                   {(['facebook', 'twitter', 'linkedin', 'copy'] as const).map((p) => (
                     <ShareButton key={p} platform={p} onClick={() => handleShare(p)} />
                   ))}
-                  {article.cover_image_caption && (
-                    <div ref={captionRef} className="relative">
-                      <button
-                        type="button"
-                        aria-label={
-                          captionOpen
-                            ? 'Masquer la description de la couverture'
-                            : 'Afficher la description de la couverture'
-                        }
-                        aria-expanded={captionOpen}
-                        aria-controls="cover-caption"
-                        onClick={() => setCaptionOpen((open) => !open)}
-                        className={`w-[36px] h-[36px] rounded-full backdrop-blur-sm border flex items-center justify-center transition-colors cursor-pointer ${
-                          captionOpen
-                            ? 'bg-white text-black border-white'
-                            : 'bg-white/10 border-white/20 text-white hover:bg-white hover:text-black'
-                        }`}
-                      >
-                        <svg className="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                          <circle cx="12" cy="12" r="9" />
-                          <path d="M12 11v5M12 8h.01" strokeLinecap="round" />
-                        </svg>
-                      </button>
-                      <div
-                        id="cover-caption"
-                        role="tooltip"
-                        aria-hidden={!captionOpen}
-                        className={`absolute bottom-[calc(100%+10px)] right-0 sm:left-0 sm:right-auto w-[min(480px,calc(100vw-32px))] px-[14px] py-[10px] rounded-[8px] bg-black/85 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] transition-all duration-200 z-30 ${
-                          captionOpen
-                            ? 'opacity-100 translate-y-0 pointer-events-auto'
-                            : 'opacity-0 translate-y-[4px] pointer-events-none'
-                        }`}
-                      >
-                        {article.cover_image_caption}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
           </div>
+
+          {article.cover_image_caption && (
+            <div
+              ref={captionRef}
+              className="absolute bottom-[16px] left-[16px] right-[16px] z-20 sm:left-[24px] sm:right-auto sm:w-[min(480px,calc(100%-48px))]"
+            >
+              <button
+                type="button"
+                aria-label={
+                  captionOpen
+                    ? 'Masquer la description de la couverture'
+                    : 'Afficher la description de la couverture'
+                }
+                aria-expanded={captionOpen}
+                aria-controls="cover-caption"
+                onClick={() => setCaptionOpen((open) => !open)}
+                className={`w-[36px] h-[36px] rounded-full backdrop-blur-sm border flex items-center justify-center transition-colors cursor-pointer ${
+                  captionOpen
+                    ? 'bg-black/70 border-white/40 text-white'
+                    : 'bg-black/45 border-white/20 text-white/80 hover:bg-black/65 hover:text-white hover:border-white/35'
+                }`}
+              >
+                <svg className="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 11v5M12 8h.01" strokeLinecap="round" />
+                </svg>
+              </button>
+              <div
+                id="cover-caption"
+                role="tooltip"
+                aria-hidden={!captionOpen}
+                className={`absolute bottom-[calc(100%+10px)] left-0 right-0 sm:right-auto sm:w-full max-h-[min(40vh,280px)] overflow-y-auto px-[14px] py-[10px] rounded-[8px] bg-black/80 backdrop-blur-sm border border-white/15 text-white/90 text-[13px] leading-[1.5] transition-all duration-200 ${
+                  captionOpen
+                    ? 'opacity-100 translate-y-0 pointer-events-auto'
+                    : 'opacity-0 translate-y-[4px] pointer-events-none'
+                }`}
+              >
+                {article.cover_image_caption}
+              </div>
+            </div>
+          )}
 
           {article.cover_image_credit && (
             <div className="absolute bottom-[16px] right-[16px] sm:right-[24px] text-white/50 text-[11px] font-light uppercase tracking-wider z-10 hidden sm:block text-right max-w-[min(360px,calc(100%-48px))] line-clamp-2">
