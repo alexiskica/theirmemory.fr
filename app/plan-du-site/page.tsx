@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHero from '@/components/layout/PageHero';
-import { getAllPublishedArticleSlugs } from '@/lib/articles';
+import { getPublishedArticles } from '@/lib/articles';
 import { buildPageMetadata } from '@/lib/seo';
 import { ARTICLE_CATEGORIES, INSTITUTIONAL_SITE_URL } from '@/lib/site-config';
 import { SITE_PAGE_CONTENT } from '@/lib/site-layout';
@@ -220,12 +220,12 @@ export default async function PlanDuSitePage() {
               </h2>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
                 {articles.map((article) => (
-                  <li key={article.slug}>
+                  <li key={article.id}>
                     <Link
                       href={`/articles/${article.slug}`}
                       className="text-[#A3A3A3] text-[14px] hover:underline hover:text-white transition-colors"
                     >
-                      {article.slug}
+                      {article.title}
                     </Link>
                   </li>
                 ))}
