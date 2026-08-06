@@ -1,8 +1,17 @@
 import type { NextConfig } from 'next';
+import { ARTICLE_SLUG_REDIRECTS } from './lib/article-slug-redirects';
 
 const supabaseHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : undefined;
+
+const articleRedirects = Object.entries(ARTICLE_SLUG_REDIRECTS).map(
+  ([from, to]) => ({
+    source: `/articles/${from}`,
+    destination: `/articles/${to}`,
+    permanent: true,
+  })
+);
 
 const nextConfig: NextConfig = {
   images: {
@@ -25,6 +34,9 @@ const nextConfig: NextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 86400,
+  },
+  async redirects() {
+    return articleRedirects;
   },
   async headers() {
     return [
@@ -63,7 +75,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+            value: 'public, s-maxage=300, stale-while-revalidate=600',
           },
         ],
       },

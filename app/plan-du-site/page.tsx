@@ -2,9 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHero from '@/components/layout/PageHero';
+import { getAllPublishedArticleSlugs } from '@/lib/articles';
 import { buildPageMetadata } from '@/lib/seo';
 import { ARTICLE_CATEGORIES, INSTITUTIONAL_SITE_URL } from '@/lib/site-config';
 import { SITE_PAGE_CONTENT } from '@/lib/site-layout';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   ...buildPageMetadata({
@@ -140,7 +143,9 @@ function SitemapAnchor({
   );
 }
 
-export default function PlanDuSitePage() {
+export default async function PlanDuSitePage() {
+  const articles = await getAllPublishedArticleSlugs();
+
   return (
     <main className="w-full min-h-screen bg-page font-['Open_Sans',sans-serif]">
       <PageHero
@@ -207,6 +212,26 @@ export default function PlanDuSitePage() {
               );
             })}
           </div>
+
+          {articles.length > 0 && (
+            <div className="mt-[48px] bg-[#141414] rounded-[12px] p-[32px] max-[900px]:p-[24px] border border-white/10">
+              <h2 className="text-[22px] font-bold text-white mb-[20px]">
+                Articles publiés
+              </h2>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+                {articles.map((article) => (
+                  <li key={article.slug}>
+                    <Link
+                      href={`/articles/${article.slug}`}
+                      className="text-[#A3A3A3] text-[14px] hover:underline hover:text-white transition-colors"
+                    >
+                      {article.slug}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </PageContainer>
       </section>
     </main>
