@@ -144,7 +144,7 @@ function SitemapAnchor({
 }
 
 export default async function PlanDuSitePage() {
-  const articles = await getAllPublishedArticleSlugs();
+  const articles = await getPublishedArticles({ limit: 100 });
 
   return (
     <main className="w-full min-h-screen bg-page font-['Open_Sans',sans-serif]">
